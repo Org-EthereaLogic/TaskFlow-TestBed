@@ -1,4 +1,4 @@
-"""Core package - configuration and database."""
+"""Core package - configuration and database utilities."""
 
 from app.core.config import settings
 from app.core.database import Base, get_db

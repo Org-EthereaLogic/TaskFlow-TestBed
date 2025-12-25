@@ -1,35 +1,32 @@
-import axios from "axios";
-import { useAuthStore } from "../hooks/useAuthStore";
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_URL || '',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor to add auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = useAuthStore.getState().token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+// Add token from storage on page load
+const storedAuth = localStorage.getItem('auth-storage');
+if (storedAuth) {
+  try {
+    const { state } = JSON.parse(storedAuth);
+    if (state?.token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${state.token}`;
     }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+  } catch {
+    // Invalid stored auth, ignore
+  }
+}
 
-// Response interceptor to handle auth errors
+// Response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid, logout
-      useAuthStore.getState().logout();
-      window.location.href = "/login";
+      localStorage.removeItem('auth-storage');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }

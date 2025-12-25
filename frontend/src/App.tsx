@@ -1,32 +1,24 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuthStore } from "./hooks/useAuthStore";
-import Layout from "./components/Layout";
-import LoginPage from "./pages/LoginPage";
-import TasksPage from "./pages/TasksPage";
-import TaskDetailPage from "./pages/TaskDetailPage";
+import { Route, Routes } from 'react-router-dom';
 
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
-}
+import Header from './components/Header';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import TaskDetail from './pages/TaskDetail';
+import TaskList from './pages/TaskList';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <Layout />
-          </PrivateRoute>
-        }
-      >
-        <Route index element={<Navigate to="/tasks" replace />} />
-        <Route path="tasks" element={<TasksPage />} />
-        <Route path="tasks/:taskId" element={<TaskDetailPage />} />
-      </Route>
-    </Routes>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Header />
+      <main className="container mx-auto px-4 py-8">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/tasks" element={<TaskList />} />
+          <Route path="/tasks/:id" element={<TaskDetail />} />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
